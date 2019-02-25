@@ -1,0 +1,26 @@
+{
+  "name": "node-ts",
+  "version": "1.0.0",
+  "description": "A simple starter for ts with node",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test",
+    "tsc": "tsc",
+    "tsc-watch": "tsc --watch",
+    "tsc-init": "tsc -- --init"
+  },
+  "author": "Ihsan aka, lvcid aka yung apriori",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^11.9.0",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "mongodb": "^3.1.13",
+    "mongoose": "^5.4.12",
+    "path": "^0.12.7",
+    "typescript": "^3.3.3"
+  },
+  "devDependencies": {
+    "@types/express": "^4.16.1"
+  }
+}

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+
+    <title>Todo Crud Application</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <form id="form">
+          <div class="form-group">
+            <label for="toDo">To Do</label>
+            <input
+              type="text"
+              class="form-control"
+              id="toDoUserInput"
+              placeholder="To do..."
+            />
+            <button class="btn-primary" type="submit">Create</button>
+          </div>
+        </form>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-8">
+          <ul class="list-group" id="display">
+            <li class="list-group-item">Cras justo odio</li>
+            <li class="list-group-item">Dapibus ac facilisis in</li>
+            <li class="list-group-item">Morbi leo risus</li>
+            <li class="list-group-item">Porta ac consectetur ac</li>
+            <li class="list-group-item">Vestibulum at eros</li>
+          </ul>
+        </div>
+        <div class="col-lg-2"></div>
+      </div>
+    </div>
+
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+      integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      $(document).ready(() => {
+        const display = $('#display');
+        const form = $('#form');
+        const toDoUserInput = $('#toDoUserInput');
+
+        const getTodos = () => {
+          fetch('/getTodos', { method: 'get' })
+            .then(res => res.json())
+            .then(data => {
+              console.log(data);
+              displayTodos(data);
+            });
+        };
+
+        getTodos();
+
+        const resetInput = () => {
+          toDoUserInput.value = '';
+        };
+
+        const editTodo = (todo, todoId, editId) => {
+          let editBtn = $(`${editId}`);
+          editBtn.click(() => {
+            fetch(`/${todo._id}`, {method: 'put', headers: { "Content-Type": "application/json; charset=utf8"}, body: JSON.stringify({todo: todoUserInput.val()})}).then((res) => res.json()).then((data) => {if(data.ok === 1) { let todoIndex = $()}})
+          })
+        }
+
+        const deleteTodo = (todo, listItemId, deleteId) => {
+          let deleteBtn = $(`#${deleteId}`);
+          deleteBtn.click(() => {
+            fetch(`/${todo._id}`, { method: 'delete'})
+              .then(res => res.json())
+              .then((data) => {
+                if(data.ok === 1) {
+                  $(`#${listItemId}`).remove()
+                }
+            })
+          })
+        }
+
+        const buildIds = todo => {
+          return {
+            editID: 'edit_' + todo._id,
+            deleteID: 'delete_' + todo._id,
+            listItemID: 'listItem_' + todo._id,
+            toDoId: 'todo_' + todo._id
+          };
+        };
+
+        const buildTemplate = (todo, ids) => {
+          return `
+          <li class="list-group-item" id="${ids.listItemID}">
+            <div class="row">
+              <div class="col-md-4" id="${ids.todoId}">${todo.todo}</div>
+              <div class="col-md-4"></div>
+              <div class="col-md-4 text-right">
+                <button type="button" class="btn btn-secondary" id="${
+                  ids.editID
+                }">Edit</button>
+                <button type="button" class="btn btn-danger" id="${
+                  ids.deleteID
+                }">Delete</button>
+              </div>
+            </div>
+          </li>`;
+        };
+      });
+
+      const displayTodos = data => {
+        data.forEach(todo => {
+          let ids = buildIds(todo);
+          display.append(buildTemplate(todo, ids));
+          editTodo(todo, ids.toDoId, ids.editID);
+          deleteTodo(todo, ids.listItemID, ids.deleteID);
+        });
+      };
+
+      form.submit(e => {
+        e.preventDefault();
+        fetch('/', {
+          method: 'post',
+          body: JSON.stringify({
+            todo: todoUserInput.val(),
+            headers: {
+              'Content-Type': 'application/json; charset=utf-8'
+            }
+          })
+            .then(response => {
+              return response.json();
+            })
+            .then(data => {
+              if (data.result.ok == 1 && data.result.n == 1) {
+                let ids = buildIds(data.document);
+                display.append(buildTemplate(data.document, ids));
+                editTodo(data.document, ids.todoId, ids.editId);
+                deleteTodo(data.document, ids.listItemId, ids.deleteId);
+              }
+            })
+            resetInput()
+        });
+      });
+    </script>
+  </body>
+</html>
